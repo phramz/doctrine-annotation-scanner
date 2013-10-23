@@ -22,6 +22,7 @@
  */
 namespace Phramz\Doctrine\Annotation\Scanner;
 
+use Doctrine\Common\Annotations\Reader;
 use Phramz\Doctrine\Annotation\Exception\FileNotFoundException;
 
 /**
@@ -30,6 +31,11 @@ use Phramz\Doctrine\Annotation\Exception\FileNotFoundException;
  */
 class FileInspector
 {
+    /**
+     * @var ClassInspector
+     */
+    private $classInspector = null;
+
     private $filename = null;
     private $classname = null;
     private $namespace = null;
@@ -46,9 +52,22 @@ class FileInspector
 
         $tokens = token_get_all(file_get_contents($filename));
 
-        $this->classname =  basename($filename, '.php');
+        $this->classname = basename($filename, '.php');
         $this->namespace = $this->parseNamespace($tokens);
         $this->filename = $filename;
+    }
+
+    /**
+     * @param Reader $reader
+     * @return ClassInspector
+     */
+    public function getClassInspector(Reader $reader)
+    {
+        if (null === $this->classInspector) {
+            $this->classInspector = new ClassInspector($this->getFullQualifiedClassname(), $reader);
+        }
+
+        return $this->classInspector;
     }
 
     /**

@@ -20,38 +20,65 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-namespace Phramz\Doctrine\Annotation\Tests\Scanner;
+namespace Phramz\Doctrine\Annotation\Scanner;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Phramz\Doctrine\Annotation\Scanner\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
- * Class FinderTest
- * @package Phramz\Doctrine\Annotation\Tests\Scanner
- * @covers Phramz\Doctrine\Annotation\Scanner\Finder
+ * Class Scanner
+ * @package Phramz\Doctrine\Annotation\Scanner
  */
-class FinderTest extends \PHPUnit_Framework_TestCase
+class Scanner implements \IteratorAggregate
 {
-    public function testConstruct()
+    /**
+     * @var AnnotationReader
+     */
+    private $reader = null;
+
+    private $path = null;
+    private $annotations = array();
+
+    /**
+     * @param AnnotationReader $reader
+     */
+    public function __construct(AnnotationReader $reader)
     {
-        $finder = new Finder();
-        $this->assertInstanceOf('Phramz\Doctrine\Annotation\Scanner\Finder', $finder);
-        $this->assertInstanceOf('Symfony\Component\Finder\Finder', $finder);
+        $this->reader = $reader;
     }
 
-    public function testFilter()
+    public function in($path)
     {
-        $finder = new Finder();
-        $finder->containsAtLeastOneOf('Phramz\Doctrine\Annotation\Fixtures\Annotations\Bazz')
-            ->containsAtLeastOneOf('Phramz\Doctrine\Annotation\Fixtures\Annotations\Bar')
-            ->in(__DIR__ . '/../../Fixtures');
+        $this->path = $path;
 
-        $this->assertCount(1, $finder);
+        return $this;
+
+    }
+
+    public function scan(array $annotations)
+    {
+        $this->annotations = $annotations;
+
+        return $this;
+    }
+
+    public function getIterator()
+    {
+        $result = array();
+
+        $finder = new Finder();
+        $finder->setReader($this->reader);
+
+        foreach ($this->annotations as $annotation) {
+            $finder->containsAtLeastOneOf($annotation);
+        }
 
         /** @var SplFileInfo $file */
-        foreach ($finder as $file) {
-            $this->assertEquals('AnnotatedClass.php', $file->getFilename());
+        foreach ($finder->in($this->path) as $file) {
+            $fileInspector = new FileInspector($file->getPathname());
+            $result[] = new ClassFileInfo($file, $fileInspector->getClassInspector($this->reader));
         }
+
+        return new \ArrayIterator($result);
     }
 }

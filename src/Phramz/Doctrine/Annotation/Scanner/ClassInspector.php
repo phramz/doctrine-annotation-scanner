@@ -34,7 +34,7 @@ class ClassInspector
     /**
      * @var null|string
      */
-    private $classname = null;
+    private $className = null;
 
     /**
      * @var Reader
@@ -82,7 +82,7 @@ class ClassInspector
             throw new ClassNotFoundException(sprintf("cannot find class %s", $classname));
         }
 
-        $this->classname = $classname;
+        $this->className = $classname;
         $this->reader = $reader;
 
         $this->reflectionClass = new \ReflectionClass($classname);
@@ -97,11 +97,7 @@ class ClassInspector
      */
     public function containsClassAnnotation($annotationName)
     {
-        if (null === $this->classAnnotations) {
-            $this->classAnnotations = $this->reader->getClassAnnotations($this->reflectionClass);
-        }
-
-        foreach ($this->classAnnotations as $annotation) {
+        foreach ($this->getClassAnnotations() as $annotation) {
             if ($annotation instanceof $annotationName) {
                 return true;
             }
@@ -117,17 +113,7 @@ class ClassInspector
      */
     public function containsMethodAnnotation($annotationName)
     {
-        if (null === $this->methodAnnotations) {
-            $this->methodAnnotations = array();
-
-            /** @var \ReflectionMethod $reflectionMethod */
-            foreach ($this->reflectionMethods as $reflectionMethod) {
-                $this->methodAnnotations[$reflectionMethod->getName()]
-                    = $this->reader->getMethodAnnotations($reflectionMethod);
-            }
-        }
-
-        foreach ($this->methodAnnotations as $annotations) {
+        foreach ($this->getMethodAnnotations() as $annotations) {
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof $annotationName) {
                     return true;
@@ -145,6 +131,60 @@ class ClassInspector
      */
     public function containsPropertyAnnotation($annotationName)
     {
+        foreach ($this->getPropertyAnnotations() as $annotations) {
+            foreach ($annotations as $annotation) {
+                if ($annotation instanceof $annotationName) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getClassName()
+    {
+        return $this->className;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getClassAnnotations()
+    {
+        if (null === $this->classAnnotations) {
+            $this->classAnnotations = $this->reader->getClassAnnotations($this->reflectionClass);
+        }
+
+        return $this->classAnnotations;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getMethodAnnotations()
+    {
+        if (null === $this->methodAnnotations) {
+            $this->methodAnnotations = array();
+
+            /** @var \ReflectionMethod $reflectionMethod */
+            foreach ($this->reflectionMethods as $reflectionMethod) {
+                $this->methodAnnotations[$reflectionMethod->getName()]
+                    = $this->reader->getMethodAnnotations($reflectionMethod);
+            }
+        }
+
+        return $this->methodAnnotations;
+    }
+
+    /**
+     * @return array|null
+     */
+    public function getPropertyAnnotations()
+    {
         if (null === $this->propertyAnnotations) {
             $this->propertyAnnotations = array();
 
@@ -155,14 +195,6 @@ class ClassInspector
             }
         }
 
-        foreach ($this->propertyAnnotations as $annotations) {
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof $annotationName) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return $this->propertyAnnotations;
     }
 }
