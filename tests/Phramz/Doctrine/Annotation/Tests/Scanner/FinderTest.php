@@ -22,7 +22,6 @@
  */
 namespace Phramz\Doctrine\Annotation\Tests\Scanner;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Phramz\Doctrine\Annotation\Scanner\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
