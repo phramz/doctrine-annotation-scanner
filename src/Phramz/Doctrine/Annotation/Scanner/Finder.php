@@ -23,6 +23,7 @@
 namespace Phramz\Doctrine\Annotation\Scanner;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Phramz\Doctrine\Annotation\Exception\AnnotationScannerException;
 use Phramz\Doctrine\Annotation\Exception\UnsupportedMethodCallException;
 use Symfony\Component\Finder\Finder as BaseFinder;
@@ -106,10 +107,10 @@ class Finder extends BaseFinder
     }
 
     /**
-     * @param AnnotationReader $reader
+     * @param Reader $reader
      * @return Finder
      */
-    public function setReader(AnnotationReader $reader)
+    public function setReader(Reader $reader)
     {
         $this->reader = $reader;
 
@@ -117,7 +118,7 @@ class Finder extends BaseFinder
     }
 
     /**
-     * @return AnnotationReader
+     * @return Reader
      */
     public function getReader()
     {
@@ -126,10 +127,13 @@ class Finder extends BaseFinder
 
     /**
      * @param array $containsAtLeastOneOf
+     * @return Finder
      */
     public function setContainsAtLeastOneOf(array $containsAtLeastOneOf)
     {
         $this->containsAtLeastOneOf = $containsAtLeastOneOf;
+
+        return $this;
     }
 
     /**
