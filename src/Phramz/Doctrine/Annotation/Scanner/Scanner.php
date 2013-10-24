@@ -23,6 +23,8 @@
 namespace Phramz\Doctrine\Annotation\Scanner;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Phramz\Doctrine\Annotation\Exception\AnnotationScannerException;
+use Symfony\Component\Finder\Finder as SymfonyFinder;
 use Symfony\Component\Finder\SplFileInfo;
 
 /**
@@ -66,17 +68,30 @@ class Scanner implements \IteratorAggregate
     {
         $result = array();
 
-        $finder = new Finder();
-        $finder->setReader($this->reader);
-
-        foreach ($this->annotations as $annotation) {
-            $finder->containsAtLeastOneOf($annotation);
-        }
+        $finder = new SymfonyFinder();
+        $finder->files()
+            ->name('*.php')
+            ->in($this->path);
 
         /** @var SplFileInfo $file */
-        foreach ($finder->in($this->path) as $file) {
-            $fileInspector = new FileInspector($file->getPathname());
-            $result[] = new ClassFileInfo($file, $fileInspector->getClassInspector($this->reader));
+        foreach ($finder as $file) {
+            try {
+                $fileInspector = new FileInspector($file->getPathname());
+                $classInspector = $fileInspector->getClassInspector($this->reader);
+
+                foreach ($this->annotations as $annotation) {
+                    if ($classInspector->containsClassAnnotation($annotation)
+                        || $classInspector->containsMethodAnnotation($annotation)
+                        || $classInspector->containsPropertyAnnotation($annotation)) {
+
+                        $result[] = new ClassFileInfo($file, $classInspector);
+                        break;
+                    }
+                }
+
+            } catch (AnnotationScannerException $ex) {
+                continue;
+            }
         }
 
         return new \ArrayIterator($result);

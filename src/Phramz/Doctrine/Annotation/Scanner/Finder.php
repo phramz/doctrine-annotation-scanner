@@ -56,15 +56,9 @@ class Finder extends BaseFinder
             ->name('*.php')
             ->filter(
                 function (\SplFileInfo $file) use ($finder) {
-                    if (!$file->isFile()) {
-                        return false;
-                    }
-
                     try {
                         $fileInspector = new FileInspector($file->getPathname());
-                        $className = $fileInspector->getFullQualifiedClassname();
-
-                        $classInspector = new ClassInspector($className, $finder->getReader());
+                        $classInspector = $fileInspector->getClassInspector($finder->getReader());
 
                         foreach ($finder->getContainsAtLeastOneOf() as $annotation) {
                             if ($classInspector->containsClassAnnotation($annotation)
