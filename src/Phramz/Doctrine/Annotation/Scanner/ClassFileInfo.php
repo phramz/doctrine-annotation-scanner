@@ -215,4 +215,9 @@ class ClassFileInfo extends SplFileInfo
     {
         return $this->fileInfo->getContents();
     }
+
+    public function __toString()
+    {
+        return $this->fileInfo->__toString();
+    }
 }
