@@ -90,4 +90,5 @@ Further readings
 ------
 
 http://symfony.com/doc/current/components/finder.html
+
 http://docs.doctrine-project.org/projects/doctrine-common/en/latest/reference/annotations.html
