@@ -33,25 +33,71 @@ use Symfony\Component\Finder\SplFileInfo;
  */
 class FinderTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Finder
+     */
+    protected $finder = null;
+
+    protected function setUp()
+    {
+        $this->finder = new Finder();
+    }
+
     public function testConstruct()
     {
-        $finder = new Finder();
-        $this->assertInstanceOf('Phramz\Doctrine\Annotation\Scanner\Finder', $finder);
-        $this->assertInstanceOf('Symfony\Component\Finder\Finder', $finder);
+        $this->assertInstanceOf('Phramz\Doctrine\Annotation\Scanner\Finder', $this->finder);
+        $this->assertInstanceOf('Symfony\Component\Finder\Finder', $this->finder);
     }
 
     public function testFilter()
     {
-        $finder = new Finder();
-        $finder->containsAtLeastOneOf('Phramz\Doctrine\Annotation\Fixtures\Annotations\Bazz')
+        $this->finder->containsAtLeastOneOf('Phramz\Doctrine\Annotation\Fixtures\Annotations\Bazz')
             ->containsAtLeastOneOf('Phramz\Doctrine\Annotation\Fixtures\Annotations\Bar')
             ->in(__DIR__ . '/../../Fixtures');
 
-        $this->assertCount(1, $finder);
+        $this->assertCount(1, $this->finder);
 
         /** @var SplFileInfo $file */
-        foreach ($finder as $file) {
+        foreach ($this->finder as $file) {
             $this->assertEquals('AnnotatedClass.php', $file->getFilename());
         }
+    }
+
+    public function testContainsAtLeastOneOf()
+    {
+        $this->assertSame($this->finder, $this->finder->containsAtLeastOneOf('foo'));
+        $this->assertEquals(array('foo'), $this->finder->getContainsAtLeastOneOf());
+    }
+
+    /**
+     * @expectedException \Phramz\Doctrine\Annotation\Exception\UnsupportedMethodCallException
+     */
+    public function testDirectories()
+    {
+        $this->finder->directories();
+    }
+
+    public function testCreate()
+    {
+        $this->assertInstanceOf('Phramz\Doctrine\Annotation\Scanner\Finder', $this->finder->create());
+    }
+
+    public function testGetSetReader()
+    {
+        $reader = $this->getMockBuilder('Doctrine\Common\Annotations\Reader')
+            ->getMockForAbstractClass();
+
+        $this->assertSame($this->finder, $this->finder->setReader($reader));
+        $this->assertSame($reader, $this->finder->getReader());
+
+    }
+
+    public function testGetSetContainsAtLeastOneOf()
+    {
+        $test = array('foo');
+
+        $this->assertSame($this->finder, $this->finder->setContainsAtLeastOneOf($test));
+        $this->assertSame($test, $this->finder->getContainsAtLeastOneOf());
+
     }
 }
