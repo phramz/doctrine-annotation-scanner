@@ -75,12 +75,14 @@ $scanner->scan(array(
 /** @var Phramz\Doctrine\Annotation\Scanner\ClassFileInfo $file */
 foreach ($scanner as $file) {
     echo "Found: " . $file->getFilename();    // will output for example "Found: AnnotatedClass.php"
-    echo "Class: " . $file->getClassName();   // will output for example "Class: Phramz\Annotation\AnnotatedClass"
-    print_r($file->getClassAnnotations());    // will give you an array of all annotations in the class-docblock
-    print_r($file->getMethodAnnotations());   // will give you an array of all methods and annotationss
-                                              // in the method-docblocks
-    print_r($file->getPropertyAnnotations()); // will give you an array of all properties and annotation
-                                              // in the method-docblocks
+    echo "Class: " . $file->getClassName();   // will output for example
+                                              // "Class: Phramz\Annotation\AnnotatedClass"
+    print_r($file->getClassAnnotations());    // will give you an array of all annotations
+                                              // in the class-docblock
+    print_r($file->getMethodAnnotations());   // will give you an array of all methods and
+                                              // annotationss in the method-docblocks
+    print_r($file->getPropertyAnnotations()); // will give you an array of all properties and
+                                              // annotation in the method-docblocks
 }
 ```
 
