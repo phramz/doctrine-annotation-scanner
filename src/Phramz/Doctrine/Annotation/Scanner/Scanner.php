@@ -22,7 +22,7 @@
  */
 namespace Phramz\Doctrine\Annotation\Scanner;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Phramz\Doctrine\Annotation\Exception\AnnotationScannerException;
 use Symfony\Component\Finder\Finder as SymfonyFinder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -34,7 +34,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class Scanner implements \IteratorAggregate
 {
     /**
-     * @var AnnotationReader
+     * @var Reader
      */
     private $reader = null;
 
@@ -42,9 +42,9 @@ class Scanner implements \IteratorAggregate
     private $annotations = array();
 
     /**
-     * @param AnnotationReader $reader
+     * @param Reader $reader
      */
-    public function __construct(AnnotationReader $reader)
+    public function __construct(Reader $reader)
     {
         $this->reader = $reader;
     }
