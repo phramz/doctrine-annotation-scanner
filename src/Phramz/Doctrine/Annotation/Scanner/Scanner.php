@@ -38,7 +38,8 @@ class Scanner implements \IteratorAggregate
      */
     private $reader = null;
 
-    private $path = null;
+    private $path = array();
+    private $exclude = array();
     private $annotations = array();
 
     /**
@@ -51,7 +52,14 @@ class Scanner implements \IteratorAggregate
 
     public function in($path)
     {
-        $this->path = $path;
+        $this->path[] = $path;
+
+        return $this;
+    }
+
+    public function exclude($path)
+    {
+        $this->exclude[] = $path;
 
         return $this;
     }
@@ -70,7 +78,8 @@ class Scanner implements \IteratorAggregate
         $finder = new SymfonyFinder();
         $finder->files()
             ->name('*.php')
-            ->in($this->path);
+            ->in($this->path)
+            ->exclude($this->exclude);
 
         /** @var SplFileInfo $file */
         foreach ($finder as $file) {
