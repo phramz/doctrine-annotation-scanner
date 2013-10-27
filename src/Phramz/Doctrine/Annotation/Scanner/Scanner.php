@@ -54,7 +54,6 @@ class Scanner implements \IteratorAggregate
         $this->path = $path;
 
         return $this;
-
     }
 
     public function scan(array $annotations)
