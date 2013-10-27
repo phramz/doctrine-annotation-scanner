@@ -74,20 +74,20 @@ class ClassInspector
     /**
      * @param string $classname The class to inspect
      * @param Reader $reader The annotation reader
-     * @throws \Phramz\Doctrine\Annotation\Exception\ClassNotFoundException
+     * @throws ClassNotFoundException
      */
     public function __construct($classname, Reader $reader)
     {
-        if (!class_exists($classname)) {
-            throw new ClassNotFoundException(sprintf("cannot find class %s", $classname));
+        try {
+            $this->className = $classname;
+            $this->reader = $reader;
+
+            $this->reflectionClass = new \ReflectionClass($classname);
+            $this->reflectionMethods = $this->reflectionClass->getMethods();
+            $this->reflectionProperties = $this->reflectionClass->getProperties();
+        } catch (\Exception $ex) {
+            throw new ClassNotFoundException(sprintf("cannot find class %s", $classname), $ex->getCode(), $ex);
         }
-
-        $this->className = $classname;
-        $this->reader = $reader;
-
-        $this->reflectionClass = new \ReflectionClass($classname);
-        $this->reflectionMethods = $this->reflectionClass->getMethods();
-        $this->reflectionProperties = $this->reflectionClass->getProperties();
     }
 
     /**
