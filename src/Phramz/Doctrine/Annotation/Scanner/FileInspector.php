@@ -110,7 +110,8 @@ class FileInspector
     private function parseNamespace($tokens)
     {
         $namespace = null;
-        for ($offset=0; $offset < count($tokens); $offset++) {
+        $tokenCount = count($tokens);
+        for ($offset=0; $offset < $tokenCount; $offset++) {
             if (!is_array($tokens[$offset])) {
                 continue;
             }
