@@ -136,7 +136,8 @@ class FileInspector
     {
         $namespace = '';
 
-        for ($offset++; $offset < count($tokens); $offset++) {
+        $tokenCount = count($tokens);
+        for ($offset++; $offset < $tokenCount; $offset++) {
             // expecting T_STRING
             if (!is_array($tokens[$offset])) {
                 break;
